@@ -45,11 +45,12 @@ async function getTodos()
 async function addTodo(todo)
 {
     Todos = await collectTodos();
-    await Todos.insertMany([todo], (err, result) => {
-        if(err) {
-            return console.log(err);
-        }
-        console.log("Task Added!");
+    await Todos.insertMany([todo])
+        .then(() => {
+            console.log("Task Added!\nTask:", todo);
+        })
+        .catch((err) => {
+            console.error("Failed to add the task\n", todo, "Error:\n", err);
     });
 }
 
