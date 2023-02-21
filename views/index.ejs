@@ -1,3 +1,19 @@
 <%- include ("../views/partials/header") %>
 Welcome to Todo-List
+    <form method="post" action="todo/add">
+        <div>
+            <label for="task">Task</label>
+            <input type="text" name="task" placeholder="Task">
+        </div>
+        <div>
+            <label for="desc">Task Description</label>
+            <textarea name="desc" id="" cols="30" rows="10"></textarea>
+        </div>
+        <button type="submit">Add Task</button>
+    </form>
+    <ul>
+        <% todos.forEach(function(todo) { %>
+            <li ><%= todo.task %> - <%= todo.desc %></li>            
+        <% }); %>
+    </ul>
 <%- include ("../views/partials/footer") %>
