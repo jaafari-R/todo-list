@@ -1,14 +1,19 @@
 <%- include ("../views/partials/header") %>
-    <form method="post" action="/todo/edit/<%= todo._id %>">
-        <div>
-            <label for="task">Task</label>
-            <input type="text" name="task" placeholder="Task", value="<%= todo.task %>">
-        </div>
-        <div>
-            <label for="desc">Task Description</label>
-            <textarea name="desc" id="" cols="30" rows="10"><%= todo.desc %></textarea>
-        </div>
-        <button type="submit">Edit Task</button>
-        <a href="/">Cancle</a>
-    </form>
+    <div class="text-center">
+        <form method="post" action="/todo/edit/<%= todo._id %>">
+            <div class="form-group">
+                <label>Task</label><br>
+                <input class="input-block-level form-control" type="text" name="task" placeholder="Task", value="<%= todo.task %>">
+            </div>
+            <div class="form-group">
+                <label>Task Description</label><br>
+                <textarea class="input-block-level form-control" name="desc" id="" cols="20" rows="10"><%= todo.desc %></textarea>
+            </div>
+            <br>
+            <button class="btn btn-primary input-block-level form-control" type="submit">Edit Task</button>
+            <br>
+            <br>
+            <a class="btn btn-danger input-block-level form-control" href="/">Cancle</a>
+        </form>
+    </div>
 <%- include ("../views/partials/footer") %>
