@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 const PORT = 14783;
 
@@ -10,6 +10,8 @@ const DB_NAME = 'todo-list-app';
 
 // App init
 const app = express();
+// MongoDB client init
+const client = new MongoClient(MONGO_URL);
 
 
 /* ----- Middleware ----- */
@@ -25,29 +27,43 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 
-/* ----- MongoDB client & db & collections ----- */
-const client = new MongoClient(MONGO_URL);
-client.connect();
-console.log('Connected to MongoDB successfully!');
-const db = client.db(DB_NAME);
-const Todos = db.collection('todos');
-
-
 /* ----- Queries ----- */
+async function collectTodos()
+{
+    const db = await client.db(DB_NAME);
+    const Todos = await db.collection('todos');
+    return Todos;
+}
+
 async function getTodos()
 {
+    Todos = await collectTodos();
     const todos = await Todos.find({}).toArray();
     return todos;
 }
 
 async function addTodo(todo)
 {
+    Todos = await collectTodos();
     await Todos.insertMany([todo], (err, result) => {
         if(err) {
             return console.log(err);
         }
         console.log("Task Added!");
     });
+}
+
+async function deleteTodo(id)
+{
+    Todos = await collectTodos();
+    const o_id = new ObjectId(id);
+    await Todos.deleteOne({_id: o_id})
+        .then(() => {
+            console.log("Deleted the task with id:", id);
+        })
+        .catch((err) => {
+            console.error("An error occured while deleting a task\n", err);
+        });
 }
 
 
@@ -70,8 +86,27 @@ app.post('/todo/add', async (req, res) => {
     res.redirect('/');
 });
 
-
-/* ----- Server Start ----- */
-app.listen(PORT, () => {
-    console.log("Server is running on port " + PORT);
+app.delete('/todo/delete/:id', async (req, res) => {
+    await deleteTodo(req.params.id);
+    res.sendStatus(200);
 });
+
+/* ----- Main ----- */
+async function main()
+{
+    /* ----- MongoDB client connection ----- */
+    await client.connect()
+        .then(() => {
+            console.log('Connected to MongoDB Successfully');
+        })
+        .catch((err) => {
+            console.error('Failed to connect to MongoDB!\n', err);
+        });
+
+    /* ----- Server Start ----- */
+    app.listen(PORT, () => {
+        console.log("Server is running on port " + PORT);
+    });
+}
+
+main();

@@ -13,7 +13,7 @@ Welcome to Todo-List
     </form>
     <ul>
         <% todos.forEach(function(todo) { %>
-            <li ><%= todo.task %> - <%= todo.desc %></li>            
+            <li ><%= todo.task %> - <%= todo.desc %> <a href="#" data-id="<%= todo._id %>" class="delete-task">Delete Task</a></li>            
         <% }); %>
     </ul>
 <%- include ("../views/partials/footer") %>
