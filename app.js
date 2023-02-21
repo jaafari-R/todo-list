@@ -35,10 +35,21 @@ async function collectTodos()
     return Todos;
 }
 
-async function getTodos()
+async function getAllTodos()
 {
     Todos = await collectTodos();
     const todos = await Todos.find({}).toArray();
+    return todos;
+}
+
+async function getTodo(id)
+{
+    Todos = await collectTodos();
+    const o_id = new ObjectId(id);
+    const todos = await Todos.findOne({_id: o_id})
+        .catch((err) => {
+            console.error("Failed to fetch the Task with the id:", id, "\nError:\n", err);
+    });
     return todos;
 }
 
@@ -67,10 +78,23 @@ async function deleteTodo(id)
         });
 }
 
+async function updateTodo(id, todo)
+{
+    Todos = await collectTodos();
+    const o_id = new ObjectId(id);
+    await Todos.updateOne({_id: o_id}, {$set: todo})
+        .then(() => {
+            console.log("Updated the task with id", id, "to:\n", todo);
+        })
+        .catch((err) => {
+            console.error("Failed to update the task with id", id, "\nError\n:", err);
+        })
+}
+
 
 /* ----- ROUTES ----- */
 app.get('/', async (req, res) => {
-    const todos = await getTodos();
+    const todos = await getAllTodos();
     // console.log(todos);
     res.render('index', {
         todos: todos
@@ -91,6 +115,25 @@ app.delete('/todo/delete/:id', async (req, res) => {
     await deleteTodo(req.params.id);
     res.sendStatus(200);
 });
+
+app.get('/todo/edit/:id', async (req, res) => {
+    todo = await getTodo(req.params.id);
+    res.render('edit', {
+        todo: todo
+    });
+});
+
+app.post('/todo/edit/:id', async (req, res) => {
+    const id = req.params.id;
+    const todo = {
+        task: req.body.task,
+        desc: req.body.desc
+    }
+
+    await updateTodo(id, todo);
+    res.redirect('/')
+});
+
 
 /* ----- Main ----- */
 async function main()

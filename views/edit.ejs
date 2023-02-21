@@ -1,0 +1,14 @@
+<%- include ("../views/partials/header") %>
+    <form method="post" action="/todo/edit/<%= todo._id %>">
+        <div>
+            <label for="task">Task</label>
+            <input type="text" name="task" placeholder="Task", value="<%= todo.task %>">
+        </div>
+        <div>
+            <label for="desc">Task Description</label>
+            <textarea name="desc" id="" cols="30" rows="10"><%= todo.desc %></textarea>
+        </div>
+        <button type="submit">Edit Task</button>
+        <a href="/">Cancle</a>
+    </form>
+<%- include ("../views/partials/footer") %>
